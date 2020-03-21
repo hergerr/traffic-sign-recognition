@@ -3,8 +3,8 @@ import os
 import numpy as np
 import glob
 
-
 BASE_PATH = 'GTSRB/Final_Training/Images'
+TEST_PATH = 'GTSRB/Final_Test/Images'
 
 def resize():
     counter = 0
@@ -31,9 +31,18 @@ def sanity_check():
 
 def load_dataset():
     filelist = glob.glob(f'{BASE_PATH}/*/*.ppm')
-    X_train = np.array([np.array(cv2.imread(fname)) for fname in filelist])
-    print(X_train.shape)
+    testlist = glob.glob(f'{TEST_PATH}/*.ppm')
+    X_train = np.array( [np.array( cv2.imread(fname) ) for fname in filelist] )
+    #X_test = np.array([np.array( cv2.imread(fname) ) for fname in testlist])
+
+    Y_train = np.array([np.zeros(43) for fname in filelist])
+    for i,fname in enumerate(filelist):
+        Y_train[i][int(fname.split('/')[3])]=1
+
+    return X_train, Y_train
 
 
 
+#resize()
+sanity_check()
 load_dataset()
