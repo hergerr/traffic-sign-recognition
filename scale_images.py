@@ -65,4 +65,6 @@ def show_image(index, X, Y):
 #resize()
 #sanity_check()
 X_train, Y_train, X_test, Y_test = load_dataset()
-show_image(random.randint(0,12629),X_train, Y_train])
+permutation = list(np.random.permutation(43))
+shuffled_X = X_train[2, :, :, :]
+print(shuffled_X)
