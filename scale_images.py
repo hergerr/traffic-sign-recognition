@@ -9,6 +9,53 @@ import random
 BASE_PATH = 'GTSRB/Final_Training/Images'
 TEST_PATH = 'GTSRB/Final_Test'
 
+class_names = {
+    0: "Speed limit to 20",
+    1: "Speed limit to 30",
+    2: "Speed limit to 50",
+    3: "Speed limit to 60",
+    4: "Speed limit to 70",
+    5: "Speed limit to 80",
+    6: "End of speed limit up to 80",
+    7: "Speed limit to 100",
+    8: "Speed limit to 120",
+    9: "No overtaking",
+    10: "No overtaking for trucks",
+    11: "Priority to through-traffic at the next intersection/crossroads only",
+    12: "Priority Road",
+    13: "Yield to cross traffic",
+    14: "Stop and give way",
+    15: "No vehicles of any kind permitted",
+    16: "No trucks permitted",
+    17: "Do not enter",
+    18: "Danger point",
+    19: "Dangerous curve to the left",
+    20: "Dangerous curve to the right",
+    21: "Double curves, first to left",
+    22: "Uneven surfaces ahead",
+    23: "Slippery road",
+    24: "Road narrows on the right",
+    25: "Roadworks",
+    26: "Traffic signals - Primary Priority",
+    27: "Pedestrian crossing",
+    28: "Children crossing",
+    29: "Bicycle lane",
+    30: "Snow or Ice possible ahead",
+    31: "Wild animals possible",
+    32: "End of previous limitation",
+    33: "You must turn right ahead",
+    34: "You must turn left ahead",
+    35: "You must go straight ahead",
+    36: "You must go straight or turn right",
+    37: "You must go straight or turn left",
+    38: "Keep right of traffic barrier/divider",
+    39: "Keep left of traffic barrier/divider",
+    40: "Roundabout",
+    41: "End of the ban on overtaking",
+    42: "End of the ban on overtaking for trucks",
+    43: "Unclassified"
+}
+
 def resize():
     counter = 0
     for dirname in os.listdir(BASE_PATH):
@@ -59,7 +106,7 @@ def load_dataset():
 def show_image(index, X, Y):
     plt.imshow(cv2.cvtColor(X[index],cv2.COLOR_BGR2RGB))
     plt.show()
-    print('Belongs to class nr: ' + str(int(np.where(Y[index]==1)[0])))
+    print('Sign meanings:\n ' + class_names[ int(np.where(Y[index]==1)[0])] )
 
 
 #resize()
@@ -67,4 +114,5 @@ def show_image(index, X, Y):
 X_train, Y_train, X_test, Y_test = load_dataset()
 permutation = list(np.random.permutation(43))
 shuffled_X = X_train[2, :, :, :]
-print(shuffled_X)
+#print(shuffled_X)
+show_image(random.randint(0,12629),X_test, Y_test)
