@@ -66,6 +66,12 @@ def resize():
                 resized_im = cv2.resize(im, (32, 32))
                 cv2.imwrite(image_path, resized_im)
 
+    testlist = glob.glob(f'{TEST_PATH}/Images/*.ppm')
+    for filename in testlist:
+        im = cv2.imread(filename)
+        resized_im = cv2.resize(im, (32,32))
+        cv2.imwrite(filename, resized_im)
+
 
 def sanity_check():
     counter = 0
@@ -109,10 +115,10 @@ def show_image(index, X, Y):
     print('Sign meanings:\n ' + class_names[ int(np.where(Y[index]==1)[0])] )
 
 
-#resize()
-#sanity_check()
-X_train, Y_train, X_test, Y_test = load_dataset()
-permutation = list(np.random.permutation(43))
-shuffled_X = X_train[2, :, :, :]
-#print(shuffled_X)
-show_image(random.randint(0,12629),X_test, Y_test)
+resize()
+sanity_check()
+# X_train, Y_train, X_test, Y_test = load_dataset()
+# permutation = list(np.random.permutation(43))
+# shuffled_X = X_train[2, :, :, :]
+# #print(shuffled_X)
+# show_image(random.randint(0,12629),X_test, Y_test)
