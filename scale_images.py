@@ -9,6 +9,7 @@ import random
 BASE_PATH = 'GTSRB/Final_Training/Images'
 TEST_PATH = 'GTSRB/Final_Test'
 
+class_sizes = {}
 class_names = {
     0: "Speed limit to 20",
     1: "Speed limit to 30",
@@ -116,14 +117,101 @@ def show_image(index, X, Y):
 
 
 def count_data_train_set_size():
-    
+
     for i,dirname in enumerate(os.listdir(BASE_PATH)):
         curr_path = os.listdir(os.path.join(BASE_PATH, dirname))
         files = [name for name in curr_path if os.path.isfile(os.path.join(BASE_PATH, dirname, name))]
         length = len(files) - 1#you have to subtract csv file in every class
+        class_sizes[dirname] = length
         print('Class ' + dirname + ': ' + str(length))
+    # print(class_sizes)
 
     
+def rotate_image(image, angle):
+  image_center = tuple(np.array(image.shape[1::-1]) / 2)
+  rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+  result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+  return result
+
+
+def augument_1_img_to_10(image_name):
+    img = cv2.imread(image_name)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    #rottating by -5, and 5 degree, _5 == -5
+    img_5 = rotate_image(img, -5)
+    img5 = rotate_image(img, 5)
+    img_10 = rotate_image(img, -10)
+    img10 = rotate_image(img, 10)
+
+    #changing brightnes of images
+    img_5_dark = cv2.cvtColor(img_5, cv2.COLOR_RGB2HSV)
+    img_5_dark[:,:,2] = np.clip(img_5_dark[:,:,2]*0.4, a_min=0,a_max=255)
+    img_5_dark = cv2.cvtColor(img_5_dark, cv2.COLOR_HSV2RGB) 
+
+    img_5_light = cv2.cvtColor(img_5, cv2.COLOR_RGB2HSV)
+    img_5_light[:,:,2] = np.clip(img_5_light[:,:,2]*1.2, a_min=0,a_max=255)
+    img_5_light = cv2.cvtColor(img_5_light, cv2.COLOR_HSV2RGB) 
+
+    img5_dark = cv2.cvtColor(img_5, cv2.COLOR_RGB2HSV)
+    img5_dark[:,:,2] = np.clip(img5_dark[:,:,2]*0.4, a_min=0,a_max=255) 
+    img5_dark = cv2.cvtColor(img5_dark, cv2.COLOR_HSV2RGB) 
+
+    img5_light = cv2.cvtColor(img_5, cv2.COLOR_RGB2HSV)
+    img5_light[:,:,2] = np.clip(img5_light[:,:,2]*1.2, a_min=0,a_max=255) 
+    img5_light = cv2.cvtColor(img5_light, cv2.COLOR_HSV2RGB) 
+
+    img_10_dark = cv2.cvtColor(img_10, cv2.COLOR_RGB2HSV)
+    img_10_dark[:,:,2] = np.clip(img_10_dark[:,:,2]*0.4, a_min=0,a_max=255) 
+    img_10_dark = cv2.cvtColor(img_10_dark, cv2.COLOR_HSV2RGB) 
+
+    img_10_light = cv2.cvtColor(img_10, cv2.COLOR_RGB2HSV)
+    img_10_light[:,:,2] = np.clip(img_10_light[:,:,2]*1.2, a_min=0,a_max=255) 
+    img_10_light = cv2.cvtColor(img_10_light, cv2.COLOR_HSV2RGB) 
+
+    # fig, ax = plt.subplots(4,3)
+    # ax[0, 0].imshow(img)
+    
+    # ax[1, 0].imshow(img_5)
+    # ax[1, 1].imshow(img5)
+    # ax[1, 2].imshow(img_10)
+    # ax[2, 0].imshow(img10)
+    # ax[2, 1].imshow(img_5_dark)
+    # ax[2, 2].imshow(img_5_light)
+    # ax[3, 0].imshow(img5_dark)
+    # ax[3, 1].imshow(img5_light)
+    # ax[3, 2].imshow(img_10_dark)
+
+    # plt.show()
+    cv2.imwrite(image_name.split('.')[0]+'img_5.ppm', cv2.cvtColor(img_5,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img5.ppm', cv2.cvtColor(img5,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img_10.ppm', cv2.cvtColor(img_10,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img10.ppm', cv2.cvtColor(img10,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img_5_dark.ppm', cv2.cvtColor(img_5_dark,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img_5_light.ppm', cv2.cvtColor(img_5_light,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img5_dark.ppm', cv2.cvtColor(img5_dark,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img5_light.ppm', cv2.cvtColor(img5_light,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img_10_dark.ppm', cv2.cvtColor(img_10_dark,cv2.COLOR_RGB2BGR)) 
+    cv2.imwrite(image_name.split('.')[0]+'img_10_light.ppm', cv2.cvtColor(img_10_light,cv2.COLOR_RGB2BGR)) 
+
+
+def augument_train_set():#every train class will have 2300 elements
+    for i,dirname in enumerate(os.listdir(BASE_PATH)):
+        curr_path = os.listdir(os.path.join(BASE_PATH, dirname))
+        files = [name for name in curr_path if os.path.isfile(os.path.join(BASE_PATH, dirname, name))]
+        to_augument =[]
+        for n in range(int((2300-len(files)-1)/10)):#tyle ma być nowych img w danej klasie
+            while True:
+                elem = random.choice(files)
+                if( elem not in to_augument):
+                    to_augument.append(elem)
+                    break
+        
+        [augument_1_img_to_10(os.path.join(BASE_PATH,dirname , image)) for image in to_augument]
+
+
+
+# augument_1_img_to_10('test.ppm')  
 
 #resize()
 #sanity_check()
@@ -132,5 +220,6 @@ def count_data_train_set_size():
 # shuffled_X = X_train[2, :, :, :]
 # #print(shuffled_X)
 # show_image(random.randint(0,12629),X_test, Y_test)
+augument_train_set()
 count_data_train_set_size()
 
