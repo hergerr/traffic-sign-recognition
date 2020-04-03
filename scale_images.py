@@ -115,10 +115,22 @@ def show_image(index, X, Y):
     print('Sign meanings:\n ' + class_names[ int(np.where(Y[index]==1)[0])] )
 
 
-resize()
-sanity_check()
+def count_data_train_set_size():
+    
+    for i,dirname in enumerate(os.listdir(BASE_PATH)):
+        curr_path = os.listdir(os.path.join(BASE_PATH, dirname))
+        files = [name for name in curr_path if os.path.isfile(os.path.join(BASE_PATH, dirname, name))]
+        length = len(files) - 1#you have to subtract csv file in every class
+        print('Class ' + dirname + ': ' + str(length))
+
+    
+
+#resize()
+#sanity_check()
 # X_train, Y_train, X_test, Y_test = load_dataset()
 # permutation = list(np.random.permutation(43))
 # shuffled_X = X_train[2, :, :, :]
 # #print(shuffled_X)
 # show_image(random.randint(0,12629),X_test, Y_test)
+count_data_train_set_size()
+
