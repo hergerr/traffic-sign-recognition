@@ -198,14 +198,16 @@ def augument_1_img_to_10(image_name):
 def augument_train_set():#every train class will have 2300 elements
     for i,dirname in enumerate(os.listdir(BASE_PATH)):
         curr_path = os.listdir(os.path.join(BASE_PATH, dirname))
-        files = [name for name in curr_path if os.path.isfile(os.path.join(BASE_PATH, dirname, name))]
+        files = [name for name in curr_path if name.find('.csv') == -1]
+        #print(files)
         to_augument =[]
-        for n in range(int((2300-len(files)-1)/10)):#tyle ma być nowych img w danej klasie
+        for n in range(int((2300-len(files))/10)):#tyle ma być nowych img w danej klasie
             while True:
                 elem = random.choice(files)
                 if( elem not in to_augument):
                     to_augument.append(elem)
                     break
+        #print(to_augument)
         
         [augument_1_img_to_10(os.path.join(BASE_PATH,dirname , image)) for image in to_augument]
 
@@ -220,6 +222,10 @@ def augument_train_set():#every train class will have 2300 elements
 # shuffled_X = X_train[2, :, :, :]
 # #print(shuffled_X)
 # show_image(random.randint(0,12629),X_test, Y_test)
+count_data_train_set_size()
 augument_train_set()
 count_data_train_set_size()
 
+X_train, Y_train, X_test, Y_test = load_dataset()
+print(X_train.shape)
+(m, n_H0, n_W0, n_C0) = X_train.shape
