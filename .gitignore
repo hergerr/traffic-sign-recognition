@@ -1,4 +1,4 @@
 .vscode/
 venv/
-GTSRB/
+GTSRB/F*
 .ipynb_checkpoints
