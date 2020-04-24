@@ -115,10 +115,32 @@ def show_image(index, X, Y):
     print('Sign meanings:\n ' + class_names[ int(np.where(Y[index]==1)[0])] )
 
 
-resize()
-sanity_check()
+# resize()
+# sanity_check()
 # X_train, Y_train, X_test, Y_test = load_dataset()
 # permutation = list(np.random.permutation(43))
 # shuffled_X = X_train[2, :, :, :]
 # #print(shuffled_X)
 # show_image(random.randint(0,12629),X_test, Y_test)
+
+def get_random_100_images_dataset(quantity=128):
+    with open(f'{TEST_PATH}/GT-final_test.csv') as csvfile:
+        spamreader = csv.reader(csvfile,delimiter=';')
+        data = list(spamreader)
+        data.pop(0)
+    
+    all_test_images = glob.glob(f'{TEST_PATH}/Images/*.ppm')
+    testlist = random.sample(all_test_images, quantity)
+    X_test = np.array([np.array( cv2.imread(fname) ) for fname in testlist])
+
+    Y_test = np.array([np.zeros(43) for fname in testlist])
+    for i,fname in enumerate(testlist):
+        image_name = fname.split('/')[3]
+        image_number = int(image_name.split('.')[0])
+        classid = int(data[image_number][7])
+        Y_test[i][classid]=1
+
+    return X_test, Y_test
+    
+
+get_random_100_images()
