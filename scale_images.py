@@ -115,8 +115,8 @@ def show_image(index, X, Y):
     print('Sign meanings:\n ' + class_names[ int(np.where(Y[index]==1)[0])] )
 
 
-
-# sanity_check()
+resize()
+sanity_check()
 # X_train, Y_train, X_test, Y_test = load_dataset()
 # permutation = list(np.random.permutation(43))
 # shuffled_X = X_train[2, :, :, :]
