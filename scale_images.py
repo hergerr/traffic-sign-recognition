@@ -132,4 +132,40 @@ def resize(basic_path):
             resized_im = cv2.resize(im, (32, 32))
             cv2.imwrite(image_path, resized_im)
 
-resize('GTSRB/Polish_Test')
+#resize('GTSRB/Polish_Test')
+
+def break_image(image):
+    stainColor = [139, 69, 19]
+    stainRay = 4
+    rowLen = 3
+    X=16 + random.randint(-5,5)
+    Y=8 + random.randint(-5,5)
+    
+    Y -= stainRay
+    for i in range(stainRay + 1):
+        Xtemp = X
+        for j in range(rowLen):
+            image[Y, Xtemp] = stainColor
+            Xtemp+=1
+        
+        X -= 1
+        Y+=1
+        rowLen += 2
+
+    for i in range(stainRay+2):
+        Xtemp = X
+        for j in range(rowLen):
+            image[Y, Xtemp] = stainColor
+            Xtemp+=1
+        X += 1
+        Y+=1
+        rowLen -=2
+
+    #return image
+
+
+image_to_break = cv2.imread('znak6.png')
+image_to_break = cv2.cvtColor(image_to_break, cv2.COLOR_BGR2RGB)
+break_image(image_to_break)
+plt.imshow(image_to_break)
+plt.show()
