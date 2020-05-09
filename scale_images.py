@@ -56,6 +56,7 @@ class_names = {
     43: "Unclassified"
 }
 
+
 def resize():
     counter = 0
     for dirname in os.listdir(BASE_PATH):
@@ -69,7 +70,7 @@ def resize():
     testlist = glob.glob(f'{TEST_PATH}/Images/*.ppm')
     for filename in testlist:
         im = cv2.imread(filename)
-        resized_im = cv2.resize(im, (32,32))
+        resized_im = cv2.resize(im, (32, 32))
         cv2.imwrite(filename, resized_im)
 
 
@@ -88,40 +89,42 @@ def sanity_check():
 def load_dataset():
     filelist = glob.glob(f'{BASE_PATH}/*/*.ppm')
     testlist = glob.glob(f'{TEST_PATH}/Images/*.ppm')
-    X_train = np.array( [np.array( cv2.imread(fname) ) for fname in filelist] )
-    X_test = np.array([np.array( cv2.imread(fname) ) for fname in testlist])
+    X_train = np.array([np.array(cv2.imread(fname)) for fname in filelist])
+    X_test = np.array([np.array(cv2.imread(fname)) for fname in testlist])
 
     Y_train = np.array([np.zeros(43) for fname in filelist])
-    for i,fname in enumerate(filelist):
-        Y_train[i][int(fname.split('/')[3])]=1
+    for i, fname in enumerate(filelist):
+        Y_train[i][int(fname.split('/')[3])] = 1
 
     with open(f'{TEST_PATH}/GT-final_test.csv') as csvfile:
-        spamreader = csv.reader(csvfile,delimiter=';')
+        spamreader = csv.reader(csvfile, delimiter=';')
         data = list(spamreader)
         data.pop(0)
 
     Y_test = np.array([np.zeros(43) for fname in testlist])
-    for i,fname in enumerate(testlist):
+    for i, fname in enumerate(testlist):
         image_name = fname.split('/')[3]
         image_number = int(image_name.split('.')[0])
         classid = int(data[image_number][7])
-        Y_test[i][classid]=1
+        Y_test[i][classid] = 1
 
     return X_train, Y_train, X_test, Y_test
 
+
 def show_image(index, X, Y):
-    plt.imshow(cv2.cvtColor(X[index],cv2.COLOR_BGR2RGB))
+    plt.imshow(cv2.cvtColor(X[index], cv2.COLOR_BGR2RGB))
     plt.show()
-    print('Sign meanings:\n ' + class_names[ int(np.where(Y[index]==1)[0])] )
+    print('Sign meanings:\n ' + class_names[int(np.where(Y[index] == 1)[0])])
 
 
-resize()
-sanity_check()
+# resize()
+# sanity_check()
 # X_train, Y_train, X_test, Y_test = load_dataset()
 # permutation = list(np.random.permutation(43))
 # shuffled_X = X_train[2, :, :, :]
 # #print(shuffled_X)
 # show_image(random.randint(0,12629),X_test, Y_test)
+
 
 def resize(basic_path):
     counter = 0
@@ -132,40 +135,58 @@ def resize(basic_path):
             resized_im = cv2.resize(im, (32, 32))
             cv2.imwrite(image_path, resized_im)
 
-#resize('GTSRB/Polish_Test')
+# resize('GTSRB/Polish_Test')
+
 
 def break_image(image):
     stainColor = [139, 69, 19]
     stainRay = 4
     rowLen = 3
-    X=16 + random.randint(-5,5)
-    Y=8 + random.randint(-5,5)
-    
+    X = 16 + random.randint(-5, 5)
+    Y = 8 + random.randint(-5, 5)
+
     Y -= stainRay
     for i in range(stainRay + 1):
         Xtemp = X
         for j in range(rowLen):
             image[Y, Xtemp] = stainColor
-            Xtemp+=1
-        
+            Xtemp += 1
+
         X -= 1
-        Y+=1
+        Y += 1
         rowLen += 2
 
     for i in range(stainRay+2):
         Xtemp = X
         for j in range(rowLen):
             image[Y, Xtemp] = stainColor
-            Xtemp+=1
+            Xtemp += 1
         X += 1
-        Y+=1
-        rowLen -=2
+        Y += 1
+        rowLen -= 2
 
-    #return image
+    # return image
 
 
-image_to_break = cv2.imread('znak6.png')
+def cover_image_with_rectangle(img):
+    num_rows, num_cols = img.shape[:2]
+    crop_img = cv2.rectangle(img, (0, 0), (32, 8), (0, 0, 0), -1)
+    return crop_img
+
+
+def cover_image_with_triangle(img):
+    points = np.array([(16, 0), (32, 0), (32, 16)])
+    crop_img = cv2.drawContours(img, [points], 0, (0, 0, 0), -1)
+    return crop_img
+
+
+image_to_break = cv2.imread('GTSRB/Polish_Test/znak6.png')
 image_to_break = cv2.cvtColor(image_to_break, cv2.COLOR_BGR2RGB)
-break_image(image_to_break)
-plt.imshow(image_to_break)
+
+# crop_img = cover_image_with_rectangle(image_to_break)
+# plt.imshow(crop_img)
+# plt.show()
+
+crop_img = cover_image_with_triangle(image_to_break)
+plt.imshow(crop_img)
 plt.show()
