@@ -8,6 +8,7 @@ import random
 
 BASE_PATH = 'GTSRB/Final_Training/Images'
 TEST_PATH = 'GTSRB/Final_Test'
+SOILED_PATH = 'GTSRB/Final_Test_Soiled/Images'
 
 class_names = {
     0: "Speed limit to 20",
@@ -59,13 +60,13 @@ class_names = {
 
 def resize():
     counter = 0
-    for dirname in os.listdir(BASE_PATH):
-        for filename in os.listdir(os.path.join(BASE_PATH, dirname)):
-            if filename.endswith(".ppm"):
-                image_path = os.path.join(BASE_PATH, dirname, filename)
-                im = cv2.imread(image_path)
-                resized_im = cv2.resize(im, (32, 32))
-                cv2.imwrite(image_path, resized_im)
+    # for dirname in os.listdir(BASE_PATH):
+    #     for filename in os.listdir(os.path.join(BASE_PATH, dirname)):
+    #         if filename.endswith(".ppm"):
+    #             image_path = os.path.join(BASE_PATH, dirname, filename)
+    #             im = cv2.imread(image_path)
+    #             resized_im = cv2.resize(im, (32, 32))
+    #             cv2.imwrite(image_path, resized_im)
 
     testlist = glob.glob(f'{TEST_PATH}/Images/*.ppm')
     for filename in testlist:
@@ -129,21 +130,21 @@ def show_image(index, X, Y):
 def resize(basic_path):
     counter = 0
     for filename in os.listdir(basic_path):
-        if filename.endswith(".png"):
+        if filename.endswith(".ppm"):
             image_path = os.path.join(basic_path, filename)
             im = cv2.imread(image_path)
             resized_im = cv2.resize(im, (32, 32))
             cv2.imwrite(image_path, resized_im)
 
-# resize('GTSRB/Polish_Test')
+#resize('GTSRB/Final_Test_Soiled/Images')
 
 
-def break_image(image):
+def soil_image(image):
     stainColor = [139, 69, 19]
     stainRay = 4
     rowLen = 3
-    X = 16 + random.randint(-5, 5)
-    Y = 8 + random.randint(-5, 5)
+    X = 16 + random.randint(-6, 6)
+    Y = 8 + random.randint(-6, 6)
 
     Y -= stainRay
     for i in range(stainRay + 1):
@@ -151,7 +152,6 @@ def break_image(image):
         for j in range(rowLen):
             image[Y, Xtemp] = stainColor
             Xtemp += 1
-
         X -= 1
         Y += 1
         rowLen += 2
@@ -180,13 +180,13 @@ def cover_image_with_triangle(img):
     return crop_img
 
 
-image_to_break = cv2.imread('GTSRB/Polish_Test/znak6.png')
-image_to_break = cv2.cvtColor(image_to_break, cv2.COLOR_BGR2RGB)
-
+image_to_soil = cv2.imread('GTSRB/Polish_Test/znak6.png')
+image_to_soil = cv2.cvtColor(image_to_soil, cv2.COLOR_BGR2RGB)
+soil_image(image_to_soil)
 # crop_img = cover_image_with_rectangle(image_to_break)
-# plt.imshow(crop_img)
-# plt.show()
-
-crop_img = cover_image_with_triangle(image_to_break)
-plt.imshow(crop_img)
+plt.imshow(image_to_soil)
 plt.show()
+
+#crop_img = cover_image_with_triangle(image_to_break)
+#plt.imshow(crop_img)
+#plt.show()
